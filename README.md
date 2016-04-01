@@ -21,20 +21,25 @@ Requirements
 Role Variables
 --------------
 
-- `musicbrainz_include_common`: tbd
-- `musicbrainz_hostname`: tbd
-- `musicbrainz_include_nginx`: tbd
+- `musicbrainz_include_common`: include common packages & settings
+- `musicbrainz_hostname`: my.local.mirror.example.com
+- `musicbrainz_include_nginx`: install local nginx instance 
 - `musicbrainz_include_replication`: install the replication scripts
 
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Minimal usage example:
 
     - hosts: mb-mirrors
       roles:
-         - { role: hzlf.musicbrainz-mirror, musicbrainz_replication_access_token: "****" }
+        - {
+            role: hzlf.musicbrainz-mirror,
+            musicbrainz_hostname: "my.local.mirror.example.com",
+            musicbrainz_replication_access_token: "*********"
+          }
+
 
 
 License
