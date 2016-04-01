@@ -1,0 +1,68 @@
+---
+
+- name: Update apt cache
+  apt: update_cache=yes cache_valid_time=3600
+  tags: packages
+
+- name: ensure git-core is installed
+  apt: pkg=git-core state=present
+
+- name: ensure memcached is installed
+  apt: pkg=memcached state=present
+
+- name: ensure python-httplib2 is installed
+  apt: pkg=python-httplib2 state=present
+
+- name: ensure redis-server is installed
+  apt: pkg=redis-server state=present
+
+- name: ensure nodejs is installed
+  apt: pkg=nodejs state=present
+
+- name: symlink nodejs to node
+  file: src=/usr/bin/nodejs dest=/usr/bin/node state=link
+
+- name: ensure npm is installed
+  apt: pkg=npm state=present
+
+- name: ensure bzip2 is installed
+  apt: pkg=bzip2 state=present
+
+- name: ensure build-essential is installed
+  apt: pkg=build-essential state=present
+
+- name: ensure memcached is installed
+  apt: pkg=memcached state=present
+
+- name: ensure postgresql-9.4 is installed
+  apt: pkg=postgresql-9.4 state=present
+
+- name: ensure postgresql-server-dev-9.4 is installed
+  apt: pkg=postgresql-server-dev-9.4 state=present
+
+- name: ensure postgresql-contrib-9.4 is installed
+  apt: pkg=postgresql-contrib-9.4 state=present
+
+- name: ensure postgresql-plperl-9.4 is installed
+  apt: pkg=postgresql-plperl-9.4 state=present
+
+
+
+
+# postgresql-9.4 postgresql-server-dev-9.4 postgresql-contrib-9.4 postgresql-plperl-9.4
+
+# libxml2-dev libpq-dev libexpat1-dev libdb-dev libicu-dev liblocal-lib-perl cpanminus
+
+- name: ensure perl dependencies are installed
+  apt: "pkg={{ item }} state=present"
+  with_items:
+   - libxml2-dev
+   - libpq-dev
+   - libexpat1-dev
+   - libdb-dev
+   - libicu-dev
+   - liblocal-lib-perl
+   - libjson-xs-perl
+   - cpanminus
+  tags: packages
+  changed_when: False

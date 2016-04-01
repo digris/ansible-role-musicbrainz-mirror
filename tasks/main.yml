@@ -1,0 +1,60 @@
+---
+
+# users & groups
+- name: create group
+  group: name={{ musicbrainz_group }} state=present gid={{ musicbrainz_gid }}
+
+- name: create user
+  user: name={{ musicbrainz_user }}
+        shell=/bin/bash
+        uid={{ musicbrainz_uid }}
+        group={{ musicbrainz_group }}
+        groups="sudo"
+
+# directories
+#- name: create install directory
+#  file: path={{ musicbrainz_install_directory }} state=directory
+
+- name: create log directory
+  file: path={{ musicbrainz_log_directory }} state=directory
+
+
+#
+- include: common.yml
+  tags: common
+  become: yes
+  when: "{{ musicbrainz_include_common }}"
+
+- include: packages.yml
+  tags: packages
+  become: yes
+
+- include: install-server.yml
+  tags: server
+  become: yes
+
+# check if database already exists
+# su - postgres -c "psql -lqt | cut -d \| -f 1 | grep -w musicbrainz_db | wc -l"
+- name: check if DB exists
+  command: su - postgres -c "psql -lqt | cut -d \| -f 1 | grep -w {{ musicbrainz_db_name }} | wc -l"
+  register: db_exists
+  tags: load-dump
+  changed_when: False
+
+- include: populate-database.yml
+  become: yes
+  tags: load-dump
+  when: "{{ db_exists.stdout == '0' }}"
+
+- include: install-service.yml
+  tags: service
+  become: yes
+
+- include: install-nginx.yml
+  tags: nginx
+  become: yes
+  when: "{{ musicbrainz_include_nginx }}"
+
+- include: install-replication.yml
+  tags: replication
+  when: "{{ musicbrainz_include_replication}}"

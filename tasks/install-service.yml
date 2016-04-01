@@ -1,0 +1,9 @@
+---
+
+- name: add supervisord config (for plackup/fcgi)
+  template: src=files/musicbrainz.supervisord.conf
+            dest=/etc/supervisor/conf.d/musicbrainz.conf
+
+- name: restart supervisord processes
+  supervisorctl: name='musicbrainz' state=restarted
+  changed_when: false

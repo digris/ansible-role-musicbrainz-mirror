@@ -1,0 +1,6 @@
+---
+
+- name: install replication cron job
+  cron: name="run mb replication"
+        minute="50"
+        job="(. ~/.bashrc; {{ musicbrainz_install_directory }}/admin/replication/LoadReplicationChanges 2>&1 | /usr/bin/logger -t mb-replication)"

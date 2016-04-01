@@ -1,0 +1,66 @@
+---
+
+- name: chekout musicbrainz-server repository
+  git: repo={{ musicbrainz_git_repository }}
+       dest={{ musicbrainz_install_directory }}
+       version={{ musicbrainz_git_version }}
+       depth=1
+       accept_hostkey=yes
+       force=yes
+  register: musicbrainz_repository
+
+
+- name: add DBDefs.pm config file
+  template: src=files/DBDefs-slave.pm
+            dest={{ musicbrainz_install_directory }}/lib/DBDefs.pm
+
+- name: enable local::lib in ~/.bashrc
+  lineinfile: dest=~/.bashrc line="eval $( perl -Mlocal::lib )"
+
+- name: install dependencies (cpanm)
+  command: >
+    cpanm --installdeps --notest .
+    chdir={{ musicbrainz_install_directory }}
+  when: musicbrainz_repository.changed
+
+- name: install dependencies (npm)
+  command: >
+    npm install
+    chdir={{ musicbrainz_install_directory }}
+  when: musicbrainz_repository.changed
+
+- name: compile assets (npm/gulp)
+  command: >
+    ./script/compile_resources.sh
+    chdir={{ musicbrainz_install_directory }}
+  when: musicbrainz_repository.changed
+
+- name: build postgresql-musicbrainz-unaccent
+  command: >
+    make
+    chdir={{ musicbrainz_install_directory }}/postgresql-musicbrainz-unaccent
+  when: musicbrainz_repository.changed
+
+- name: install postgresql-musicbrainz-unaccent
+  command: >
+    make install
+    chdir={{ musicbrainz_install_directory }}/postgresql-musicbrainz-unaccent
+  when: musicbrainz_repository.changed
+
+- name: build postgresql-musicbrainz-collate
+  command: >
+    make
+    chdir={{ musicbrainz_install_directory }}/postgresql-musicbrainz-collate
+  when: musicbrainz_repository.changed
+
+- name: install postgresql-musicbrainz-collate
+  command: >
+    make install
+    chdir={{ musicbrainz_install_directory }}/postgresql-musicbrainz-collate
+  when: musicbrainz_repository.changed
+
+- name: configure database access - pg_hba.conf
+  lineinfile: dest=/etc/postgresql/9.4/main/pg_hba.conf regexp="^Listen " insertafter="^# TYPE  DATABASE" line="local    {{ musicbrainz_db_name }}    {{ musicbrainz_db_username }}    ident    map=mb_map"
+
+- name: configure database access - pg_ident.conf
+  lineinfile: dest=/etc/postgresql/9.4/main/pg_ident.conf regexp="^Listen " insertafter="^# MAPNAME" line="mb_map    www-user    {{ musicbrainz_db_password }}"

@@ -1,0 +1,50 @@
+---
+
+# 'common' settings & packages
+#  helpfull basic settings for a minimal installation (locales, timezone etc.). when using this role in an existing
+#  playbook you maybe want to skip this bits...
+#
+musicbrainz_include_common: yes
+
+# dump location & dir
+#
+musicbrainz_dump_mirror: ftp://ftp.musicbrainz.org/pub/musicbrainz/data/fullexport/
+musicbrainz_dump_directory: /tmp/mb-dumps/
+
+musicbrainz_user: mb
+musicbrainz_uid: 2000
+musicbrainz_group: mb
+musicbrainz_gid: 2000
+
+musicbrainz_git_repository: git://github.com/metabrainz/musicbrainz-server.git
+musicbrainz_git_version: master
+
+# hostname (likely an f.q.d.n)
+#
+musicbrainz_hostname: musicbrainz-mirror.local
+
+musicbrainz_install_directory: /srv/musicbrainz-server
+musicbrainz_log_directory: /var/log/musicbrainz
+
+musicbrainz_db_name: "musicbrainz_db"
+musicbrainz_db_username: "musicbrainz"
+musicbrainz_db_password: "musicbrainz"
+
+# postgres host & port
+#  not implemented yet
+#
+#musicbrainz_db_host: 127.0.0.1
+#musicbrainz_db_port: 5432
+
+# setup repliycation (cron jobs)
+#  make sure to provide a valid 'replication access token'
+#  see: https://metabrainz.org/ for more information
+#  NOTE: DO NOT EXPOSE THIS ACCESS TOKEN PUBLICLY!
+#
+musicbrainz_include_replication: yes
+musicbrainz_replication_access_token: "***"
+
+# install local nginx instance
+#  disable if you want to configure a reverse-proxy throgh an existing webserver
+#
+musicbrainz_include_nginx: yes

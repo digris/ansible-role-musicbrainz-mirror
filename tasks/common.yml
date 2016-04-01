@@ -1,0 +1,47 @@
+---
+
+- name: Update apt cache
+  apt: update_cache=yes cache_valid_time=3600
+  tags: util
+
+- name: Install base packages (Debian)
+  apt: "pkg={{ item }} state=present"
+  with_items:
+   - locales
+   - ntp
+   - htop
+   - screen
+   - ca-certificates
+   - git
+   - multitail
+   - supervisor
+  tags: packages
+  changed_when: False
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure locale en_US.UTF-8
+  locale_gen: name=en_US.UTF-8 state=present
+  tags: util
+
+- name: Locale - check current locale settings
+  command: /usr/bin/locale
+  register: locale_output
+  changed_when: locale_output.stderr != ''
+
+- name: Locale - generate UTF-8 locale
+  command: /usr/sbin/locale-gen en_US.UTF-8
+  when: locale_output.stderr != ''
+
+- name: Locale - adjust current locale
+  command: /usr/sbin/update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+  when: locale_output.stderr != ''
+
+- name: Update Timezone
+  copy: content="{{ base_timezone }}\n" dest=/etc/timezone owner=root group=root mode=0644
+  become: true
+  register: timezone
+
+- name: Reconfigure Timezone Data
+  shell: dpkg-reconfigure -f noninteractive tzdata
+  become: true
+  when: timezone.changed
