@@ -1,8 +1,8 @@
 galaxy_info:
   author: Jonas Ohrstrom
   description: Ansible role for MusicBrainz mirror-server
-  company: hazelfire llc
-  issue_tracker_url: https://github.com/hzlf/ansible-role-musicbrainz-mirror/issues
+  company: digris ag
+  issue_tracker_url: https://github.com/digris/ansible-role-musicbrainz-mirror/issues
   license: MIT
   min_ansible_version: 2.0
   github_branch: master
