@@ -61,7 +61,7 @@ MusicBrainz::Server::DatabaseConnectionFactory->register_databases(
     },
 );
 
-sub DB_SCHEMA_SEQUENCE { 22 }
+sub DB_SCHEMA_SEQUENCE { 23 }
 sub REPLICATION_TYPE { RT_SLAVE }
 sub REPLICATION_ACCESS_TOKEN { "{{ musicbrainz_replication_access_token }}" }
 
@@ -69,7 +69,7 @@ sub REPLICATION_ACCESS_TOKEN { "{{ musicbrainz_replication_access_token }}" }
 # HTTP Server Names
 ################################################################################
 sub WEB_SERVER                { "{{ musicbrainz_hostname }}" }
-# sub LUCENE_SERVER             { "search.musicbrainz.org" }
+sub LUCENE_SERVER                { "{{ musicbrainz_search_server }}" }
 
 ################################################################################
 # Server Settings
@@ -79,7 +79,7 @@ sub DB_STAGING_SERVER { 0 }
 sub DEVELOPMENT_SERVER { 0 }
 sub CATALYST_DEBUG { 0 }
 
-sub RENDERER_HOST { 'not.in.use' }
+sub RENDERER_HOST { '' }
 sub RENDERER_PORT { 9009 }
 
 1;

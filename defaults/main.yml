@@ -23,6 +23,9 @@ musicbrainz_git_version: master
 #
 musicbrainz_hostname: musicbrainz-mirror.local
 
+# in case you have an own instance of the search server installed (e.g. digris.musicbrainz-search)
+musicbrainz_search_server: search.musicbrainz.org
+
 musicbrainz_install_directory: /srv/musicbrainz-server
 musicbrainz_log_directory: /var/log/musicbrainz
 

@@ -17,12 +17,14 @@
 - name: enable local::lib in ~/.bashrc
   lineinfile: dest=~/.bashrc line="eval $( perl -Mlocal::lib )"
 
+# cpanm task initially takes ~20 minutes
 - name: install dependencies (cpanm)
   command: >
     cpanm --installdeps --notest .
     chdir={{ musicbrainz_install_directory }}
   when: musicbrainz_repository.changed
 
+# npm task initially takes ~10 minutes
 - name: install dependencies (npm)
   command: >
     npm install
@@ -35,6 +37,8 @@
     chdir={{ musicbrainz_install_directory }}
   when: musicbrainz_repository.changed
 
+##
+# build additional postgres tools
 - name: build postgresql-musicbrainz-unaccent
   command: >
     make
@@ -59,8 +63,17 @@
     chdir={{ musicbrainz_install_directory }}/postgresql-musicbrainz-collate
   when: musicbrainz_repository.changed
 
-- name: configure database access - pg_hba.conf
-  lineinfile: dest=/etc/postgresql/9.4/main/pg_hba.conf regexp="^Listen " insertafter="^# TYPE  DATABASE" line="local    {{ musicbrainz_db_name }}    {{ musicbrainz_db_username }}    ident    map=mb_map"
+##
+# configure postgresql access
+# NOTE: there are no special security measurements in place. (local   all    all    trust)
+# in the default setup the system is considered to run on an isolated instance in a vpn environment with local
+# network only - and http() access via reverse proxy.
+# further there is no sensitive information in the database (only the public mb dump) - so we consider this as
+# save enough.
+- name: add pg_hba.conf config file
+  template: src=files/pg_hba.conf
+            dest=/etc/postgresql/9.5/main/pg_hba.conf
 
-- name: configure database access - pg_ident.conf
-  lineinfile: dest=/etc/postgresql/9.4/main/pg_ident.conf regexp="^Listen " insertafter="^# MAPNAME" line="mb_map    www-user    {{ musicbrainz_db_password }}"
+- name: restart postgresql service
+  service: name=postgresql state=restarted
+

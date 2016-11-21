@@ -9,14 +9,17 @@
 
 - name: set dump base path
   set_fact:
-    musicbrainz_dump_base_url: "{{ musicbrainz_dump_mirror }}{{ latest_key.content  | replace('\n', '') }}/"
+    musicbrainz_dump_base_url: "{{ musicbrainz_dump_mirror }}{{ latest_key.content | replace('\n', '') }}/"
     musicbrainz_dump_base_dir: "{{ musicbrainz_dump_directory }}{{ latest_key.content  | replace('\n', '') }}/"
 
 - name: ensure dump directory is available
-  file: path={{ musicbrainz_dump_base_url }} state=directory
+  file: path={{ musicbrainz_dump_base_dir }} state=directory
 
+# TODO: inestigate download. Does not work through ansible (both ftp & http)
+# Bug: https://github.com/ansible/ansible-modules-core/issues/3661
+# Current workaround: wget dumps manuallly :(
 - name: download dump files if not present
-  get_url: url={{ musicbrainz_dump_base_url }}{{ item }} dest={{ musicbrainz_dump_base_dir }}{{ item }}
+  get_url: url={{ musicbrainz_dump_base_url | replace('ftp://', 'http://') }}{{ item }} dest={{ musicbrainz_dump_base_dir }}{{ item }}
   with_items:
    - mbdump.tar.bz2
    - mbdump-editor.tar.bz2
@@ -26,5 +29,5 @@
 
 - name: load initial db dumps (./admin/InitDb.pl)
   command: >
-    ./admin/InitDb.pl --createdb --import {{ musicbrainz_dump_directory }}mbdump*.tar.bz2 --echo
+    ./admin/InitDb.pl --createdb --import {{ musicbrainz_dump_base_dir }}mbdump*.tar.bz2 --echo
     chdir={{ musicbrainz_install_directory }}

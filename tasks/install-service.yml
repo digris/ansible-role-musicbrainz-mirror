@@ -1,5 +1,9 @@
 ---
 
+# fcgi needs FCGI::ProcManager
+- name: install FCGI::ProcManager (cpanm)
+  cpanm: name=FCGI::ProcManager
+
 - name: add supervisord config (for plackup/fcgi)
   template: src=files/musicbrainz.supervisord.conf
             dest=/etc/supervisor/conf.d/musicbrainz.conf

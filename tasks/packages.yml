@@ -18,12 +18,15 @@
 
 - name: ensure nodejs is installed
   apt: pkg=nodejs state=present
+  when: ansible_distribution == 'Debian' and ansible_distribution_release == 'jessie'
 
 - name: symlink nodejs to node
   file: src=/usr/bin/nodejs dest=/usr/bin/node state=link
+  when: ansible_distribution == 'Debian' and ansible_distribution_release == 'jessie'
 
 - name: ensure npm is installed
   apt: pkg=npm state=present
+  when: ansible_distribution == 'Debian' and ansible_distribution_release == 'jessie'
 
 - name: ensure bzip2 is installed
   apt: pkg=bzip2 state=present
@@ -31,27 +34,35 @@
 - name: ensure build-essential is installed
   apt: pkg=build-essential state=present
 
+- name: ensure supervisor is installed
+  apt: pkg=supervisor state=present
+
 - name: ensure memcached is installed
   apt: pkg=memcached state=present
 
-- name: ensure postgresql-9.4 is installed
-  apt: pkg=postgresql-9.4 state=present
+##
+# postgres needs to be installed vrom vendor repository as the required
+# version 9.5 is not in 'official' debian
+- name: add postgres repository key
+  apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
 
-- name: ensure postgresql-server-dev-9.4 is installed
-  apt: pkg=postgresql-server-dev-9.4 state=present
+- name: add postgres repository
+  apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main' state=present
 
-- name: ensure postgresql-contrib-9.4 is installed
-  apt: pkg=postgresql-contrib-9.4 state=present
+- name: ensure postgresql-9.5 is installed
+  apt: pkg=postgresql-9.5 state=present
 
-- name: ensure postgresql-plperl-9.4 is installed
-  apt: pkg=postgresql-plperl-9.4 state=present
+- name: ensure postgresql-server-dev-9.5 is installed
+  apt: pkg=postgresql-server-dev-9.5 state=present
+
+- name: ensure postgresql-contrib-9.5 is installed
+  apt: pkg=postgresql-contrib-9.5 state=present
+
+- name: ensure postgresql-plperl-9.5 is installed
+  apt: pkg=postgresql-plperl-9.5 state=present
 
 
 
-
-# postgresql-9.4 postgresql-server-dev-9.4 postgresql-contrib-9.4 postgresql-plperl-9.4
-
-# libxml2-dev libpq-dev libexpat1-dev libdb-dev libicu-dev liblocal-lib-perl cpanminus
 
 - name: ensure perl dependencies are installed
   apt: "pkg={{ item }} state=present"
@@ -63,6 +74,8 @@
    - libicu-dev
    - liblocal-lib-perl
    - libjson-xs-perl
+   - libfile-slurp-perl
    - cpanminus
   tags: packages
   changed_when: False
+

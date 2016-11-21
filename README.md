@@ -15,13 +15,12 @@ Requirements
    + ubuntu: Should/could work as well, but has never been tested.
 
  - The instance used to deploy to must have at least **25GB** of free disk space (for replication-data).
- - Patience. Running this role for the first time (and having the replication-data loaded) will take ine to two hours.
+ - Patience. Running this role for the first time (and having the replication-data loaded) will take one to two hours.
    (even longer on a slow uplink, as the required dumps are 2GB+)
 
 Role Variables
 --------------
 
-- `musicbrainz_include_common`: include common packages & settings
 - `musicbrainz_hostname`: my.local.mirror.example.com
 - `musicbrainz_include_nginx`: install local nginx instance 
 - `musicbrainz_include_replication`: install the replication scripts
@@ -39,6 +38,15 @@ Minimal usage example:
             musicbrainz_hostname: "my.local.mirror.example.com",
             musicbrainz_replication_access_token: "*********"
           }
+
+
+TODO:
+-----
+
+Update playbook to work with latest version:
+
+https://blog.musicbrainz.org/2016/05/25/schema-change-release-2016-05-23-with-upgrade-instructions/
+
 
 
 

@@ -18,19 +18,12 @@
 - name: create log directory
   file: path={{ musicbrainz_log_directory }} state=directory
 
-
-#
-- include: common.yml
-  tags: common
-  become: yes
-  when: "{{ musicbrainz_include_common }}"
-
 - include: packages.yml
   tags: packages
   become: yes
 
 - include: install-server.yml
-  tags: server
+  tags: mirror-server
   become: yes
 
 # check if database already exists
@@ -47,7 +40,7 @@
   when: "{{ db_exists.stdout == '0' }}"
 
 - include: install-service.yml
-  tags: service
+  tags: mirror-service
   become: yes
 
 - include: install-nginx.yml
@@ -56,5 +49,5 @@
   when: "{{ musicbrainz_include_nginx }}"
 
 - include: install-replication.yml
-  tags: replication
+  tags: mirror-replication
   when: "{{ musicbrainz_include_replication}}"
